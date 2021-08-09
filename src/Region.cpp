@@ -6,7 +6,6 @@ double clip(double val){
 }
 
 void Region::compute(const Region::plate& _plate, bool learn) {
-    winners.clear();
     for (size_t i = 0; i < column_dimensions[0]; ++i) {
         for (size_t j = 0; j < column_dimensions[1]; ++j) {
             if (_plate[i][j]) {
@@ -44,6 +43,9 @@ void Region::activate_predicted_column(size_t x, size_t y, bool learn) {
                         } else {
                             presynaptic_cell.second = clip(presynaptic_cell.second - permanence_decrement);
                         }
+                        /// can be more efficient
+                        size_t new_synapses_count = synapse_sample_size - segment->active_potential_num();
+                        grow_synapses(*segment, new_synapses_count);
                     }
                 }
             }
@@ -75,7 +77,7 @@ Region::Region(std::vector<size_t>& column_dimensions, size_t cells_per_column, 
         predicted_segment_decrement(predicted_segment_decrement),
         max_segments_per_cell(max_segments_per_cell),
         max_synapses_per_segment(max_synapses_per_segment),
-        cells(column_dimensions[0], matrix_2d<Cell>(column_dimensions[1], vector<Cell>(cells_per_column))) {}
+        cells(column_dimensions[0], matrix_2d<Cell>(column_dimensions[1], vector<Cell>(cells_per_column))){}
 
 bool Region::is_predicted_col(size_t x, size_t y) {
     bool predicted = false;
@@ -94,6 +96,14 @@ void Region::step() {
             }
         }
     }
+    /// may be not the most efficient
+    prev_winners = std::move(winners);
+    winners.clear();
+}
+
+void Region::grow_synapses(Segment& segment, size_t new_synapses_count) {
+    auto candidates = prev_winners;
+
 }
 
 

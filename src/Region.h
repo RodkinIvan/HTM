@@ -20,8 +20,11 @@ private:
     /// All the cells in the region
     matrix_3d<Cell> cells;
 
-    /// winner-cells from the previous step
+    /// winner-cells from the current step
     std::vector<Cell*> winners;
+
+    /// winner-cells from the previous step
+    std::vector<Cell*> prev_winners;
 
     /// checks if the column predicted by previous activationW
     bool is_predicted_col(size_t x, size_t y);
@@ -35,7 +38,10 @@ private:
     /// if the column was predicted, but not actually activated by input
     void punish_predicted_column(size_t x, size_t y, bool learn);
 
-    /// makes cell.prev_active = cell.active and cell.active = false for all cells
+    /// grows synapses to previous winners
+    void grow_synapses(Segment& segment, size_t new_synapses_count);
+
+    /// makes cell.prev_active = cell.active and cell.active = false for all cells and makes prev_winners = winners and winners.clear()
     void step();
 public:
 
@@ -51,6 +57,8 @@ public:
     double predicted_segment_decrement = 0.0;
     size_t max_segments_per_cell = 255;
     size_t max_synapses_per_segment = 255;
+
+    size_t synapse_sample_size = 1;
 
     explicit Region(
             std::vector<size_t>& column_dimensions,
