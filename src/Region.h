@@ -74,16 +74,16 @@ public:
 
     explicit Region(
             const std::vector<size_t>& column_dimensions,
-            size_t cells_per_column          = 32,
-            size_t min_threshold             = 10,
-            size_t activation_threshold      = 13,
-            double initial_permanence        = 0.21,
-            double connected_permanence      = 0.5,
-            double permanence_increment      = 0.1,
-            double permanenceDecrement       = 0.1,
+            size_t cells_per_column            = 32,
+            size_t min_threshold               = 10,
+            size_t activation_threshold        = 13,
+            double initial_permanence          = 0.21,
+            double connected_permanence        = 0.5,
+            double permanence_increment        = 0.1,
+            double permanenceDecrement         = 0.1,
             double predicted_segment_decrement = 0.0,
-            size_t max_segments_per_cell        = 255,
-            size_t max_synapses_per_segment     = 255
+            size_t max_segments_per_cell       = 255,
+            size_t max_synapses_per_segment    = 255
     );
 
     /// steps of TM algorithm for one SDR and several
@@ -91,6 +91,8 @@ public:
     void compute(const std::vector<plate>& data, bool learn = true);
 
     std::tuple<size_t, size_t, size_t> get_coordinates(const Cell* cell) const;
+
+    std::vector<std::tuple<size_t, size_t, size_t>> get_predicted_cells_coordinates() const;
 
     friend void print_predicted_cells(const Region& region);
     friend void print_connections(const Region& region);

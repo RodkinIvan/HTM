@@ -209,5 +209,19 @@ std::tuple<size_t, size_t, size_t> Region::get_coordinates(const Cell* cell) con
     return {0, 0, 0};
 }
 
+std::vector<std::tuple<size_t, size_t, size_t>> Region::get_predicted_cells_coordinates() const {
+    std::vector<std::tuple<size_t, size_t, size_t>> ans;
+    for (size_t i = 0; i < column_dimensions[0]; ++i) {
+        for (size_t j = 0; j < column_dimensions[1]; ++j) {
+            for (size_t k = 0; k < cells_per_column; ++k) {
+                if (cells[i][j][k].predict) {
+                    ans.emplace_back(i, j, k);
+                }
+            }
+        }
+    }
+    return ans;
+}
+
 
 

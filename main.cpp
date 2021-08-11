@@ -16,14 +16,10 @@ std::vector<Region::plate> make_sdrs(const std::vector<bool>& bit_array) {
 }
 
 void print_predicted_cells(const Region& region) {
-    for (size_t i = 0; i < region.column_dimensions[0]; ++i) {
-        for (size_t j = 0; j < region.column_dimensions[1]; ++j) {
-            for (size_t k = 0; k < region.cells_per_column; ++k) {
-                if (region.cells[i][j][k].predict) {
-                    std::cout << "Column: " << i << ", " << j << ' ' << "Cell: " << k << '\n';
-                }
-            }
-        }
+    std::cout << "Prediction:\n";
+    auto preds = region.get_predicted_cells_coordinates();
+    for(auto [i, j, k] : preds){
+        std::cout << "Column: " << i << ", " << j << ' ' << "Cell: " << k << '\n';
     }
     std::cout << '\n';
 }
@@ -45,25 +41,53 @@ void print_connections(const Region& region) {
     std::cout << '\n';
 }
 
-int main() {
+void test_bit_sequence(){
     Region region(
             {1, 2},
             4,
             1,
-            1,
-            0.4
-    );
+            1
+            );
     std::vector<bool> bit_array{0, 1, 0, 1, 1, 0, 1, 0};
     auto sdrs = make_sdrs(bit_array);
     for (int i = 0; i < 10; ++i) {
-        size_t iter = 0;
-        for (auto& sdr : sdrs) {
-            region.compute(sdr, true);
-            std::cout << "Epoch " << i << ", sdr #" << iter << ":\n";
-            print_connections(region);
-            if (i > 0)
-                print_predicted_cells(region);
-            ++iter;
-        }
+        region.compute(sdrs);
     }
+    std::cout << "Graph:\n";
+    print_connections(region);
+}
+
+void real_time_test(){
+    std::cout << "Cells per column: ";
+    size_t cells_per_col = 1;
+    std::cin >> cells_per_col;
+    std::cout << '\n';
+    std::cout << "Min threshold and activation threshold: ";
+    size_t min = 0;
+    size_t act = 0;
+    std::cin >> min >> act;
+    Region region(
+            {1, 2},
+            cells_per_col,
+            min,
+            act,
+            0.4,
+            0.5,
+            0.1,
+            0.1,
+            0.05
+            );
+    std::cout << "Your bits array ('-1' to stop):\n";
+    int b;
+    while(std::cin >> b && b != -1){
+        region.compute({{!bool(b), bool(b)}}, true);
+        auto pred = region.get_predicted_cells_coordinates();
+        std::cout << "Prediction: " <<( pred.empty() ? "None" : std::string(1, '0' + std::get<1>(pred[0]))) << '\n';
+    }
+    print_connections(region);
+}
+
+int main() {
+//    test_bit_sequence();
+    real_time_test();
 }
