@@ -90,6 +90,9 @@ public:
     void compute(const plate& _plate, bool learn);
     void compute(const std::vector<plate>& data, bool learn = true);
 
+    std::tuple<size_t, size_t, size_t> get_coordinates(const Cell* cell) const;
+
     friend void print_predicted_cells(const Region& region);
+    friend void print_connections(const Region& region);
 };
 

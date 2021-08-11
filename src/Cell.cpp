@@ -1,6 +1,7 @@
 #include "Cell.h"
 
 bool Cell::update_predict() {
+    predict = false;
     active_segments.clear();
     matching_segments.clear();
     for (auto& segment : lateral_segments) {

@@ -196,5 +196,18 @@ Segment* Region::grow_new_segment(Cell* cell) {
     cell->lateral_segments.emplace_back();
 }
 
+std::tuple<size_t, size_t, size_t> Region::get_coordinates(const Cell* cell) const{
+    for (size_t i = 0; i < column_dimensions[0]; ++i) {
+        for (size_t j = 0; j < column_dimensions[1]; ++j) {
+            for (size_t k = 0; k < cells_per_column; ++k) {
+                if(&cells[i][j][k] == cell){
+                    return {i, j, k};
+                }
+            }
+        }
+    }
+    return {0, 0, 0};
+}
+
 
 
