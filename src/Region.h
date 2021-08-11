@@ -3,9 +3,11 @@
 #include <vector>
 #include <tuple>
 #include "Cell.h"
+struct Cell;
+struct Segment;
 
 class Region {
-private:
+public:
     template<typename T>
     using matrix_3d = std::vector<std::vector<std::vector<T>>>;
 
@@ -16,6 +18,7 @@ private:
     using vector = std::vector<T>;
 
     using plate = std::vector<std::vector<bool>>;
+private:
 
     /// All the cells in the region
     matrix_3d<Cell> cells;
@@ -41,7 +44,16 @@ private:
     /// grows synapses to previous winners
     void grow_synapses(Segment& segment, size_t new_synapses_count);
 
+    /// returns the best segment (with maximum amount of active potential synapses) with the cell, which it connected to
+    std::tuple<Cell*, Segment*> best_matching_segment(size_t x, size_t y);
+
+    /// returns the cell with least number of lateral segments
+    Cell* least_used_cell(size_t x, size_t y);
+
+    static Segment* grow_new_segment(Cell* cell);
+
     /// makes cell.prev_active = cell.active and cell.active = false for all cells and makes prev_winners = winners and winners.clear()
+    /// and makes prediction
     void step();
 public:
 
@@ -61,7 +73,7 @@ public:
     size_t synapse_sample_size = 1;
 
     explicit Region(
-            std::vector<size_t>& column_dimensions,
+            const std::vector<size_t>& column_dimensions,
             size_t cells_per_column          = 32,
             size_t min_threshold             = 10,
             size_t activation_threshold      = 13,
@@ -77,5 +89,7 @@ public:
     /// steps of TM algorithm for one SDR and several
     void compute(const plate& _plate, bool learn);
     void compute(const std::vector<plate>& data, bool learn = true);
+
+    friend void print_predicted_cells(const Region& region);
 };
 

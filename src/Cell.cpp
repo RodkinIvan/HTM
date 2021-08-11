@@ -2,11 +2,16 @@
 
 bool Cell::update_predict() {
     active_segments.clear();
-    for (auto& segment : lateralSegments) {
-        bool segment_predict = segment.active_synapses_num() > region->activation_threshold;
+    matching_segments.clear();
+    for (auto& segment : lateral_segments) {
+        size_t active_num = segment.active_synapses_num();
+        bool segment_predict = active_num >= region->activation_threshold;
         predict |= segment_predict;
         if (segment_predict) {
             active_segments.push_back(&segment);
+        }
+        if (active_num >= region->min_threshold) {
+            matching_segments.push_back(&segment);
         }
     }
     return predict;
