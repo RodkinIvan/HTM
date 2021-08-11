@@ -8,4 +8,6 @@ struct Segment{
     size_t active_synapses_num() const;
     size_t active_potential_num() const;
     size_t prev_active_potential_num() const;
+
+    Segment() = default;
 };

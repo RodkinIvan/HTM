@@ -50,7 +50,7 @@ private:
     /// returns the cell with least number of lateral segments
     Cell* least_used_cell(size_t x, size_t y);
 
-    static Segment* grow_new_segment(Cell* cell);
+    Segment* grow_new_segment(Cell* cell);
 
     /// makes cell.prev_active = cell.active and cell.active = false for all cells and makes prev_winners = winners and winners.clear()
     /// and makes prediction
@@ -86,7 +86,10 @@ public:
             size_t max_synapses_per_segment    = 255
     );
 
+    Region(const Region& other) = delete;
+
     /// steps of TM algorithm for one SDR and several
+    /// can be marked const for learn = false
     void compute(const plate& _plate, bool learn);
     void compute(const std::vector<plate>& data, bool learn = true);
 
@@ -94,6 +97,12 @@ public:
 
     std::vector<std::tuple<size_t, size_t, size_t>> get_predicted_cells_coordinates() const;
 
+    std::vector<std::tuple<size_t, size_t, size_t>> get_prev_active_cells_coordinates() const;
+
+
+    void reset_predictions();
+
+    std::vector<std::tuple<size_t, size_t, size_t>> prediction_for_several_steps(size_t number_of_steps);
     friend void print_predicted_cells(const Region& region);
     friend void print_connections(const Region& region);
 };

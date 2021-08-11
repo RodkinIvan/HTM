@@ -24,5 +24,6 @@ public:
 
     explicit Cell(Region* region) : region(region) {};
 
+
     bool update_predict();
 };

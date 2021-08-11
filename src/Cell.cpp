@@ -18,3 +18,4 @@ bool Cell::update_predict() {
     }
     return predict;
 }
+

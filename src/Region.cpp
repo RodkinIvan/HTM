@@ -35,9 +35,9 @@ void Region::activate_predicted_column(size_t x, size_t y, bool learn) {
     for (auto& cell : cells[x][y]) {
         if (!cell.active_segments.empty()) {
             cell.active = true;
-            winners.push_back(&cell);
-            for (auto* segment : cell.active_segments) {
-                if (learn) {
+            if (learn) {
+                winners.push_back(&cell);
+                for (auto* segment : cell.active_segments) {
                     for (auto& presynaptic_cell : segment->presynaptic_cells) {
                         if (presynaptic_cell.first->prev_active) {
                             presynaptic_cell.second = clip(presynaptic_cell.second + permanence_increment);
@@ -66,8 +66,8 @@ void Region::burst_column(size_t x, size_t y, bool learn) {
             learning_segment = grow_new_segment(winner_cell);
     }
     winner_cell->active = true;
-    winners.push_back(winner_cell);
     if (learn) {
+        winners.push_back(winner_cell);
         for (auto& presynaptic_cell : learning_segment->presynaptic_cells) {
             presynaptic_cell.second += presynaptic_cell.first->prev_active ? permanence_increment
                                                                            : -permanence_decrement;
@@ -194,13 +194,14 @@ Cell* Region::least_used_cell(size_t x, size_t y) {
 
 Segment* Region::grow_new_segment(Cell* cell) {
     cell->lateral_segments.emplace_back();
+    return &cell->lateral_segments.back();
 }
 
-std::tuple<size_t, size_t, size_t> Region::get_coordinates(const Cell* cell) const{
+std::tuple<size_t, size_t, size_t> Region::get_coordinates(const Cell* cell) const {
     for (size_t i = 0; i < column_dimensions[0]; ++i) {
         for (size_t j = 0; j < column_dimensions[1]; ++j) {
             for (size_t k = 0; k < cells_per_column; ++k) {
-                if(&cells[i][j][k] == cell){
+                if (&cells[i][j][k] == cell) {
                     return {i, j, k};
                 }
             }
@@ -215,6 +216,54 @@ std::vector<std::tuple<size_t, size_t, size_t>> Region::get_predicted_cells_coor
         for (size_t j = 0; j < column_dimensions[1]; ++j) {
             for (size_t k = 0; k < cells_per_column; ++k) {
                 if (cells[i][j][k].predict) {
+                    ans.emplace_back(i, j, k);
+                }
+            }
+        }
+    }
+    return ans;
+}
+
+void Region::reset_predictions() {
+    step();
+}
+
+std::vector<std::tuple<size_t, size_t, size_t>> Region::prediction_for_several_steps(size_t number_of_steps) {
+    /// backup activations
+    auto prev_active_cells = get_prev_active_cells_coordinates();
+
+    /// compute
+    auto predicted_cells = get_predicted_cells_coordinates();
+    for (size_t r = 0; r < number_of_steps - 1; ++r) {
+        std::vector<std::vector<bool>> _plate(column_dimensions[0], std::vector<bool>(column_dimensions[1]));
+        for (auto[i, j, k] : predicted_cells) {
+            _plate[i][j] = true;
+        }
+        compute(_plate, false);
+        predicted_cells = get_predicted_cells_coordinates();
+    }
+
+    /// restore previous activity
+    for (size_t i = 0; i < column_dimensions[0]; ++i) {
+        for (size_t j = 0; j < column_dimensions[1]; ++j) {
+            for (size_t k = 0; k < cells_per_column; ++k) {
+                cells[i][j][k].prev_active = false;
+            }
+        }
+    }
+    for(auto [i, j, k] : prev_active_cells){
+        cells[i][j][k].prev_active = true;
+    }
+
+    return predicted_cells;
+}
+
+std::vector<std::tuple<size_t, size_t, size_t>> Region::get_prev_active_cells_coordinates() const {
+    std::vector<std::tuple<size_t, size_t, size_t>> ans;
+    for (size_t i = 0; i < column_dimensions[0]; ++i) {
+        for (size_t j = 0; j < column_dimensions[1]; ++j) {
+            for (size_t k = 0; k < cells_per_column; ++k) {
+                if (cells[i][j][k].prev_active) {
                     ans.emplace_back(i, j, k);
                 }
             }
