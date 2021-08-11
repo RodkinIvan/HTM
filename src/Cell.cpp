@@ -10,7 +10,8 @@ bool Cell::update_predict() {
         if (segment_predict) {
             active_segments.push_back(&segment);
         }
-        if (active_num >= region->min_threshold) {
+        size_t active_potential_num = segment.active_potential_num();
+        if (active_potential_num >= region->min_threshold) {
             matching_segments.push_back(&segment);
         }
     }

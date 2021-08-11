@@ -45,7 +45,7 @@ void Region::activate_predicted_column(size_t x, size_t y, bool learn) {
                             presynaptic_cell.second = clip(presynaptic_cell.second - permanence_decrement);
                         }
                         /// can be more efficient
-                        size_t new_synapses_count = synapse_sample_size - segment->active_potential_num();
+                        size_t new_synapses_count = synapse_sample_size - segment->prev_active_potential_num();
                         grow_synapses(*segment, new_synapses_count);
                     }
                 }
@@ -59,19 +59,21 @@ void Region::burst_column(size_t x, size_t y, bool learn) {
     /// We DO NOT burst the column, only the winner winner_cell, if we are in a good mood >:(
     auto[winner_cell, learning_segment] = best_matching_segment(x, y);
     if (learning_segment != nullptr) {
-        winner_cell->active = true;
+        ///.. Here can be something
     } else {
         winner_cell = least_used_cell(x, y);
         if (learn)
             learning_segment = grow_new_segment(winner_cell);
     }
+    winner_cell->active = true;
     winners.push_back(winner_cell);
     if (learn) {
         for (auto& presynaptic_cell : learning_segment->presynaptic_cells) {
             presynaptic_cell.second += presynaptic_cell.first->prev_active ? permanence_increment
                                                                            : -permanence_decrement;
+            presynaptic_cell.second = clip(presynaptic_cell.second);
         }
-        size_t new_synapse_count = synapse_sample_size - learning_segment->active_potential_num();
+        size_t new_synapse_count = synapse_sample_size - learning_segment->prev_active_potential_num();
         grow_synapses(*learning_segment, new_synapse_count);
         if (prev_winners.empty()) {
             winner_cell->lateral_segments.pop_back();
@@ -167,8 +169,9 @@ std::tuple<Cell*, Segment*> Region::best_matching_segment(size_t x, size_t y) {
     size_t best_score = 0;
     for (auto& cell : cells[x][y]) {
         for (auto* segment : cell.matching_segments) {
-            if (segment->active_potential_num() > best_score) {
-                best_score = segment->active_potential_num();
+            size_t prev_active_potential_num = segment->prev_active_potential_num();
+            if (prev_active_potential_num > best_score) {
+                best_score = prev_active_potential_num;
                 best_segment = segment;
                 best_cell = &cell;
             }
