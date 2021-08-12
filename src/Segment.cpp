@@ -24,3 +24,20 @@ size_t Segment::prev_active_potential_num() const {
     }
     return num_active_synapses;
 }
+
+void Segment::replace_the_weakest_synapse(Cell* cell, double permanence) {
+    if(presynaptic_cells.empty()){
+        std::cerr << "Attempt to replace synapse in empty segment" << '\n';
+        return;
+    }
+    double min_permanence = presynaptic_cells[0].second;
+    auto the_weakest_presynaptic_cell = presynaptic_cells[0];
+    for(auto& presynaptic_cell : presynaptic_cells){
+        if(presynaptic_cell.second < min_permanence){
+            min_permanence = presynaptic_cell.second;
+            the_weakest_presynaptic_cell = presynaptic_cell;
+        }
+    }
+    the_weakest_presynaptic_cell.first = cell;
+    the_weakest_presynaptic_cell.second = permanence;
+}

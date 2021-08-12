@@ -3,6 +3,8 @@
 #include <vector>
 #include <tuple>
 #include "Cell.h"
+#include <iostream>
+
 struct Cell;
 struct Segment;
 
@@ -99,11 +101,12 @@ public:
 
     std::vector<std::tuple<size_t, size_t, size_t>> get_prev_active_cells_coordinates() const;
 
-
+    /// Equivalent to computing an empty plate. Just makes patterns before reset and after independent.
     void reset_predictions();
 
+    /// Predicts cells activity with induction
     std::vector<std::tuple<size_t, size_t, size_t>> prediction_for_several_steps(size_t number_of_steps);
     friend void print_predicted_cells(const Region& region);
-    friend void print_connections(const Region& region);
+    friend void print_connections(const Region& region, bool all);
 };
 

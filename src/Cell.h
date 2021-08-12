@@ -3,8 +3,6 @@
 #include "Region.h"
 #include "Segment.h"
 
-struct Synapse;
-
 struct Cell {
 public:
     Region* region;
@@ -24,6 +22,7 @@ public:
 
     explicit Cell(Region* region) : region(region) {};
 
+    Segment* empty_worst_segment();
 
     bool update_predict();
 };

@@ -67,6 +67,7 @@ void Region::burst_column(size_t x, size_t y, bool learn) {
     }
     winner_cell->active = true;
     if (learn) {
+        /// some issues may exist if start (learn = true) after computing with (learn = false).
         winners.push_back(winner_cell);
         for (auto& presynaptic_cell : learning_segment->presynaptic_cells) {
             presynaptic_cell.second += presynaptic_cell.first->prev_active ? permanence_increment
@@ -158,7 +159,11 @@ void Region::grow_synapses(Segment& segment, size_t new_synapses_count) {
         }
         if (!already_connected) {
             ++counter;
-            segment.presynaptic_cells.emplace_back(candidates[i], initial_permanence);
+            if(segment.presynaptic_cells.size() < max_synapses_per_segment){
+                segment.presynaptic_cells.emplace_back(candidates[i], initial_permanence);
+            } else {
+                segment.replace_the_weakest_synapse(candidates[i], initial_permanence);
+            }
         }
     }
 }
@@ -193,7 +198,11 @@ Cell* Region::least_used_cell(size_t x, size_t y) {
 }
 
 Segment* Region::grow_new_segment(Cell* cell) {
-    cell->lateral_segments.emplace_back();
+    if(cell->lateral_segments.size() < max_segments_per_cell){
+        cell->lateral_segments.emplace_back();
+    } else {
+        return cell->empty_worst_segment();
+    }
     return &cell->lateral_segments.back();
 }
 
@@ -252,9 +261,9 @@ std::vector<std::tuple<size_t, size_t, size_t>> Region::prediction_for_several_s
         }
     }
     for(auto [i, j, k] : prev_active_cells){
-        cells[i][j][k].prev_active = true;
+        cells[i][j][k].active = true;
     }
-
+    step();
     return predicted_cells;
 }
 

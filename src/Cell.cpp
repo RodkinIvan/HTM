@@ -19,3 +19,17 @@ bool Cell::update_predict() {
     return predict;
 }
 
+Segment* Cell::empty_worst_segment() {
+    size_t min_active_potential = region->max_synapses_per_segment;
+    Segment* worst_segment = nullptr;
+    for(auto& segment : lateral_segments){
+        size_t active_potential = segment.prev_active_potential_num();
+        if(active_potential <= min_active_potential){
+            min_active_potential = active_potential;
+            worst_segment = &segment;
+        }
+    }
+    worst_segment->presynaptic_cells.clear();
+    return worst_segment;
+}
+

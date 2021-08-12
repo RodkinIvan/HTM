@@ -9,5 +9,7 @@ struct Segment{
     size_t active_potential_num() const;
     size_t prev_active_potential_num() const;
 
+    void replace_the_weakest_synapse(Cell* cell, double permanence);
+
     Segment() = default;
 };
