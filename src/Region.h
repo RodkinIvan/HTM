@@ -71,7 +71,6 @@ public:
     double predicted_segment_decrement = 0.0;
     size_t max_segments_per_cell = 255;
     size_t max_synapses_per_segment = 255;
-
     size_t synapse_sample_size = 1;
 
     explicit Region(
@@ -82,13 +81,11 @@ public:
             double initial_permanence          = 0.21,
             double connected_permanence        = 0.5,
             double permanence_increment        = 0.1,
-            double permanenceDecrement         = 0.1,
+            double permanence_decrement         = 0.1,
             double predicted_segment_decrement = 0.0,
             size_t max_segments_per_cell       = 255,
             size_t max_synapses_per_segment    = 255
     );
-
-    Region(const Region& other) = delete;
 
     /// steps of TM algorithm for one SDR and several
     /// can be marked const for learn = false
