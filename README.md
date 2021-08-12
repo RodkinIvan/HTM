@@ -44,5 +44,5 @@ tm.compute([[0, 1]], True) # computation of 2-d SDR. The second parameter is lea
 #### evaluating model:
 ```python
 tm.get_anomaly() 
-# the score of unpredicted active cells and wrong predicted inactive cells 
+# the percentage of unpredicted active cells and wrong predicted inactive cells 
 ```
