@@ -103,6 +103,11 @@ public:
 
     /// Predicts cells activity with induction
     std::vector<std::tuple<size_t, size_t, size_t>> prediction_for_several_steps(size_t number_of_steps);
+
+    /// The score of unpredicted active cols and wrong predicted inactive cols
+    double anomaly = 0;
+
+    double get_anomaly() const {return anomaly;}
     friend void print_predicted_cells(const Region& region);
     friend void print_connections(const Region& region, bool all);
 };

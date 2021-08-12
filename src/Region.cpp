@@ -7,21 +7,28 @@ double clip(double val) {
 
 
 void Region::compute(const Region::plate& _plate, bool learn) {
+    anomaly = 0;
+    double number_of_active_or_predicted_cols = 0;
     for (size_t i = 0; i < column_dimensions[0]; ++i) {
         for (size_t j = 0; j < column_dimensions[1]; ++j) {
             if (_plate[i][j]) {
+                ++number_of_active_or_predicted_cols;
                 if (is_predicted_col(i, j)) {
                     activate_predicted_column(i, j, learn);
                 } else {
+                    ++anomaly;
                     burst_column(i, j, learn);
                 }
             } else {
                 if (is_predicted_col(i, j)) {
+                    ++number_of_active_or_predicted_cols;
+                    ++anomaly;
                     punish_predicted_column(i, j, learn);
                 }
             }
         }
     }
+    anomaly = anomaly / number_of_active_or_predicted_cols;
     step();
 }
 

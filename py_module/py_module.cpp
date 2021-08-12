@@ -76,191 +76,13 @@ struct temporal_memory_wrapper : Region {
                     max_segments_per_cell,
                     max_synapses_per_segment
             ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions)
-    ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions,
-            size_t cells_per_column
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions),
-            cells_per_column
-    ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions,
-            size_t cells_per_column,
-            size_t min_threshold
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions),
-            cells_per_column,
-            min_threshold
-    ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions,
-            size_t cells_per_column,
-            size_t min_threshold,
-            size_t activation_threshold
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions),
-            cells_per_column,
-            min_threshold,
-            activation_threshold
-    ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions,
-            size_t cells_per_column,
-            size_t min_threshold,
-            size_t activation_threshold,
-            double initial_permanence
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions),
-            cells_per_column,
-            min_threshold,
-            activation_threshold,
-            initial_permanence
-    ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions,
-            size_t cells_per_column,
-            size_t min_threshold,
-            size_t activation_threshold,
-            double initial_permanence,
-            double connected_permanence
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions),
-            cells_per_column,
-            min_threshold,
-            activation_threshold,
-            initial_permanence,
-            connected_permanence
-    ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions,
-            size_t cells_per_column,
-            size_t min_threshold,
-            size_t activation_threshold,
-            double initial_permanence,
-            double connected_permanence,
-            double permanence_increment
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions),
-            cells_per_column,
-            min_threshold,
-            activation_threshold,
-            initial_permanence,
-            connected_permanence,
-            permanence_increment
-    ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions,
-            size_t cells_per_column,
-            size_t min_threshold,
-            size_t activation_threshold,
-            double initial_permanence,
-            double connected_permanence,
-            double permanence_increment,
-            double permanence_decrement
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions),
-            cells_per_column,
-            min_threshold,
-            activation_threshold,
-            initial_permanence,
-            connected_permanence,
-            permanence_increment,
-            permanence_decrement
-    ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions,
-            size_t cells_per_column,
-            size_t min_threshold,
-            size_t activation_threshold,
-            double initial_permanence,
-            double connected_permanence,
-            double permanence_increment,
-            double permanence_decrement,
-            double predicted_segment_decrement
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions),
-            cells_per_column,
-            min_threshold,
-            activation_threshold,
-            initial_permanence,
-            connected_permanence,
-            permanence_increment,
-            permanence_decrement,
-            predicted_segment_decrement
-    ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions,
-            size_t cells_per_column,
-            size_t min_threshold,
-            size_t activation_threshold,
-            double initial_permanence,
-            double connected_permanence,
-            double permanence_increment,
-            double permanence_decrement,
-            double predicted_segment_decrement,
-            size_t max_segments_per_cell
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions),
-            cells_per_column,
-            min_threshold,
-            activation_threshold,
-            initial_permanence,
-            connected_permanence,
-            permanence_increment,
-            permanence_decrement,
-            predicted_segment_decrement,
-            max_segments_per_cell
-    ) {}
-
-    explicit temporal_memory_wrapper(
-            const py::list& column_dimensions,
-            size_t cells_per_column,
-            size_t min_threshold,
-            size_t activation_threshold,
-            double initial_permanence,
-            double connected_permanence,
-            double permanence_increment,
-            double permanence_decrement,
-            double predicted_segment_decrement,
-            size_t max_segments_per_cell,
-            size_t max_synapses_per_segment
-    ) : Region(
-            to_std_vector<size_t>(column_dimensions),
-            cells_per_column,
-            min_threshold,
-            activation_threshold,
-            initial_permanence,
-            connected_permanence,
-            permanence_increment,
-            permanence_decrement,
-            predicted_segment_decrement,
-            max_segments_per_cell,
-            max_synapses_per_segment
-    ) {}
 };
 
 BOOST_PYTHON_MODULE (HTM) {
     py::to_python_converter<std::vector<int>, vector_to_list<int>>();
 
     py::class_<temporal_memory_wrapper>("temporal_memory", py::init<py::tuple>())
-
             /// %#>!?&*$ default arguments
-            .def(py::init<py::tuple, int, int, int, double, double, double, double, double, int, int>())
             .def(py::init<py::tuple, int>())
             .def(py::init<py::tuple, int, int>())
             .def(py::init<py::tuple, int, int, int>())
@@ -270,6 +92,8 @@ BOOST_PYTHON_MODULE (HTM) {
             .def(py::init<py::tuple, int, int, int, double, double, double, double>())
             .def(py::init<py::tuple, int, int, int, double, double, double, double, double>())
             .def(py::init<py::tuple, int, int, int, double, double, double, double, double, int>())
-            .def("compute", &temporal_memory_wrapper::compute);
-//            .def("predict", &clf_wrapper::predict);
+            .def(py::init<py::tuple, int, int, int, double, double, double, double, double, int, int>())
+            .def("compute", &temporal_memory_wrapper::compute)
+            .def("reset_predictions", &temporal_memory_wrapper::Region::reset_predictions)
+            .def("get_anomaly", &temporal_memory_wrapper::Region::get_anomaly);
 }
