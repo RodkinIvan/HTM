@@ -1,9 +1,17 @@
 import matplotlib.pyplot as plt
 from HTM import temporal_memory
 
+
+def make_sdrs(bits_array):
+    sdrs = []
+    for bit in bits_array:
+        sdrs.append([[not bool(bit), bool(bit)]])
+    return sdrs
+
+
 tm = temporal_memory(
     (1, 2), # column_dimensions
-    1,      # cells_per_column
+    4,      # cells_per_column
     1,      # min_threshold
     1,      # activation_threshold
     0.4,    # initial_permanence
@@ -14,12 +22,13 @@ tm = temporal_memory(
     2,      # max_segments_per_cell
     2       # max_synapses_per_segment
 )
+bits_array = [0, 1, 0, 1, 1, 0, 1, 0]
+sdrs = make_sdrs(bits_array)
 errors = []
-for i in range(5):
-    tm.compute([[0, 1]], True)
-    errors.append(tm.get_anomaly())
-    tm.compute([[1, 0]], True)
-    errors.append(tm.get_anomaly())
+for i in range(7):
+    for sdr in sdrs:
+        tm.compute(sdr, True)
+        errors.append(tm.get_anomaly())
 
 plt.plot(range(len(errors)), errors)
 plt.show()
