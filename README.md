@@ -21,7 +21,7 @@ or
 from HTM import temporal_memory
 ```
 ### Temporal Memory API:
-#### init:
+- [x] init:
 ```python
 tm = temporal_memory(
     (1, 2), # column_dimensions
@@ -37,12 +37,30 @@ tm = temporal_memory(
     2       # max_synapses_per_segment, default = 255
 )
 ```
-#### computation/learning:
+- [x] computation/learning:
 ```python
 tm.compute([[0, 1]], True) # computation of 2-d SDR. The second parameter is learning
 ```
-#### evaluating model:
+- [x] evaluating model:
 ```python
 tm.get_anomaly() 
 # the percentage of unpredicted active cells and wrong predicted inactive cells 
+```
+- [x] synapses list:
+
+```python
+tm.print_connections() # == tm.print_connections(False), 
+# prints only connected synapses
+tm.print_connections(True)
+# prints all potential synapses
+
+# The bool argument is all_synapses
+```
+- [ ] Warning! kwargs don't work. Sorry:( You can NOT to write parameters this way:
+```python
+tm = temporal_memoty(
+    column_dimensions=(1, 2),
+    cells_per_column=4,
+    # ...
+)
 ```

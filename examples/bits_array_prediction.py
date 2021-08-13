@@ -25,10 +25,13 @@ tm = temporal_memory(
 bits_array = [0, 1, 0, 1, 1, 0, 1, 0]
 sdrs = make_sdrs(bits_array)
 errors = []
-for i in range(7):
+for i in range(8):
     for sdr in sdrs:
         tm.compute(sdr, True)
         errors.append(tm.get_anomaly())
+
+tm.print_connections(True)
+tm.print_connections()
 
 plt.plot(range(len(errors)), errors)
 plt.show()

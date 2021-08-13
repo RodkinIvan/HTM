@@ -166,7 +166,7 @@ void Region::grow_synapses(Segment& segment, size_t new_synapses_count) {
         }
         if (!already_connected) {
             ++counter;
-            if(segment.presynaptic_cells.size() < max_synapses_per_segment){
+            if (segment.presynaptic_cells.size() < max_synapses_per_segment) {
                 segment.presynaptic_cells.emplace_back(candidates[i], initial_permanence);
             } else {
                 segment.replace_the_weakest_synapse(candidates[i], initial_permanence);
@@ -205,7 +205,7 @@ Cell* Region::least_used_cell(size_t x, size_t y) {
 }
 
 Segment* Region::grow_new_segment(Cell* cell) {
-    if(cell->lateral_segments.size() < max_segments_per_cell){
+    if (cell->lateral_segments.size() < max_segments_per_cell) {
         cell->lateral_segments.emplace_back();
     } else {
         return cell->empty_worst_segment();
@@ -267,7 +267,7 @@ std::vector<std::tuple<size_t, size_t, size_t>> Region::prediction_for_several_s
             }
         }
     }
-    for(auto [i, j, k] : prev_active_cells){
+    for (auto[i, j, k] : prev_active_cells) {
         cells[i][j][k].active = true;
     }
     step();
@@ -288,5 +288,31 @@ std::vector<std::tuple<size_t, size_t, size_t>> Region::get_prev_active_cells_co
     return ans;
 }
 
-
+void Region::print_connections(bool all) const {
+    if(all){
+        std::cout << "All synapses:\n";
+    }else{
+        std::cout << "Connected synapses:\n";
+    }
+    for (size_t i = 0; i < column_dimensions[0]; ++i) {
+        for (size_t j = 0; j < column_dimensions[1]; ++j) {
+            for (size_t k = 0; k < cells_per_column; ++k) {
+                for (auto& segment : cells[i][j][k].lateral_segments) {
+                    for (auto& presynaptic_cell : segment.presynaptic_cells) {
+                        auto[u, v, s] = get_coordinates(presynaptic_cell.first);
+                        if (presynaptic_cell.second >= connected_permanence || all) {
+                            if (column_dimensions[0] != 1)
+                                std::cout << '(' << u << ", " << v << ", " << s << ") ~> (" << i << ", " << j << ", "
+                                          << k << ") with permanence = " << presynaptic_cell.second << '\n';
+                            else
+                                std::cout << '(' << v << ", " << s << ") ~> (" << j << ", "
+                                << k << ") with permanence = " << presynaptic_cell.second << '\n';
+                        }
+                    }
+                }
+            }
+        }
+    }
+    std::cout << '\n';
+}
 

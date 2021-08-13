@@ -20,24 +20,7 @@ void print_predicted_cells(const Region& region) {
     std::cout << '\n';
 }
 
-void print_connections(const Region& region, bool all=false) {
-    for (size_t i = 0; i < region.column_dimensions[0]; ++i) {
-        for (size_t j = 0; j < region.column_dimensions[1]; ++j) {
-            for (size_t k = 0; k < region.cells_per_column; ++k) {
-                for (auto& segment : region.cells[i][j][k].lateral_segments) {
-                    for (auto& presynaptic_cell : segment.presynaptic_cells) {
-                        auto[u, v, s] = region.get_coordinates(presynaptic_cell.first);
-                        if(presynaptic_cell.second >= region.connected_permanence || all){
-                            std::cout << '(' << u << ", " << v << ", " << s << ") ~> (" << i << ", " << j << ", " << k
-                            << ") with permanence = " << presynaptic_cell.second << '\n';
-                        }
-                    }
-                }
-            }
-        }
-    }
-    std::cout << '\n';
-}
+
 
 void test_bit_sequence() {
     std::cerr << "Bit sequence test\n";
@@ -53,7 +36,7 @@ void test_bit_sequence() {
         region.compute(sdrs);
     }
     std::cout << "Graph:\n";
-    print_connections(region);
+    region.print_connections();
 }
 
 void real_time_test() {
@@ -84,7 +67,7 @@ void real_time_test() {
         auto pred = region.get_predicted_cells_coordinates();
         std::cout << "Prediction: " << (pred.empty() ? "None" : std::string(1, '0' + std::get<1>(pred[0]))) << '\n';
     }
-    print_connections(region);
+    region.print_connections();
 }
 
 void test_some_series() {
@@ -128,7 +111,7 @@ void test_some_series() {
         region.reset_predictions();
     }
 
-    print_connections(region);
+    region.print_connections();
     region.compute(sdrs[0], false);
     auto predict_3 = region.prediction_for_several_steps(3);
     std::cout << "Prediction for 3 steps forward from 1:\n";
@@ -161,7 +144,7 @@ void max_synapses_and_max_segments_limit_test(){
         region.compute(sdrs);
     }
     std::cout << "Synapses:\n";
-    print_connections(region, true);\
+    region.print_connections(true);\
     std::cout << "As expected, they are with initial permanence, because they updates every computation\n";
 }
 

@@ -76,6 +76,9 @@ struct temporal_memory_wrapper : Region {
                     max_segments_per_cell,
                     max_synapses_per_segment
             ) {}
+    void print_connections() const{
+        Region::print_connections();
+    }
 };
 
 BOOST_PYTHON_MODULE (HTM) {
@@ -95,5 +98,7 @@ BOOST_PYTHON_MODULE (HTM) {
             .def(py::init<py::tuple, int, int, int, double, double, double, double, double, int, int>())
             .def("compute", &temporal_memory_wrapper::compute)
             .def("reset_predictions", &temporal_memory_wrapper::Region::reset_predictions)
-            .def("get_anomaly", &temporal_memory_wrapper::Region::get_anomaly);
+            .def("get_anomaly", &temporal_memory_wrapper::Region::get_anomaly)
+            .def("print_connections", &temporal_memory_wrapper::Region::print_connections)
+            .def("print_connections", &temporal_memory_wrapper::print_connections);
 }

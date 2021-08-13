@@ -108,7 +108,10 @@ public:
     double anomaly = 0;
 
     double get_anomaly() const {return anomaly;}
+
+    void print_connections(bool all=false) const;
+
+
     friend void print_predicted_cells(const Region& region);
-    friend void print_connections(const Region& region, bool all);
 };
 
